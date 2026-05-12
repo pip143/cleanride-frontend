@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react"
 import { useAuth } from "../../../shared/hooks/useAuth"
 
+const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8080").replace(/\/$/, "")
+const apiUrl = (path) => {
+  if (!path) return ""
+  if (path.startsWith("http")) return path
+  return `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`
+}
+
 export default function ProfileViewComplete() {
   const { userId } = useAuth()
 
@@ -12,13 +19,14 @@ export default function ProfileViewComplete() {
   const [name, setName] = useState("")
   const [email, setEmail] = useState("")
   const [currentPassword, setCurrentPassword] = useState("")
-  const [newPassword, setNewPassword] = useState(" ")
+  const [newPassword, setNewPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   
   const [savingProfile, setSavingProfile] = useState(false)
   const [savingPassword, setSavingPassword] = useState(false)
   const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const [message, setMessage] = useState("")
+  const [photoVersion, setPhotoVersion] = useState(Date.now())
 
   // Fetch profile on mount
   useEffect(() => {
@@ -27,7 +35,7 @@ export default function ProfileViewComplete() {
       setLoading(true)
       setError("")
       try {
-        const response = await fetch(`http://localhost:8080/api/users/${userId}/profile`)
+        const response = await fetch(apiUrl(`/api/users/${userId}/profile`))
         if (!response.ok) throw new Error("Failed to load profile")
         const data = await response.json()
         setProfile(data)
@@ -47,7 +55,7 @@ export default function ProfileViewComplete() {
     setSavingProfile(true)
     setError("")
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${userId}/profile`, {
+      const response = await fetch(apiUrl(`/api/users/${userId}/profile`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email })
@@ -77,7 +85,7 @@ export default function ProfileViewComplete() {
     setSavingPassword(true)
     setError("")
     try {
-      const response = await fetch(`http://localhost:8080/api/users/${userId}/password`, {
+      const response = await fetch(apiUrl(`/api/users/${userId}/password`), {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ currentPassword, newPassword })
@@ -110,7 +118,7 @@ export default function ProfileViewComplete() {
       const formData = new FormData()
       formData.append("file", file)
       
-      const response = await fetch(`http://localhost:8080/api/users/${userId}/photo`, {
+      const response = await fetch(apiUrl(`/api/users/${userId}/photo`), {
         method: "POST",
         body: formData
       })
@@ -120,9 +128,10 @@ export default function ProfileViewComplete() {
       setTimeout(() => setMessage(""), 3000)
       
       // Refresh profile to show new photo
-      const profileResponse = await fetch(`http://localhost:8080/api/users/${userId}/profile`)
+      const profileResponse = await fetch(apiUrl(`/api/users/${userId}/profile`))
       if (profileResponse.ok) {
         setProfile(await profileResponse.json())
+        setPhotoVersion(Date.now())
       }
     } catch {
       setError("Failed to upload photo")
@@ -186,7 +195,7 @@ export default function ProfileViewComplete() {
               <div className="h-20 w-20 rounded-full bg-blue-600 text-white font-bold text-xl flex items-center justify-center overflow-hidden flex-shrink-0">
                 {profile?.photoUrl ? (
                   <img
-                    src={`http://localhost:8080${profile.photoUrl}`}
+                    src={apiUrl(profile.photoUrl) + `?v=${photoVersion}`}
                     alt="Profile"
                     className="h-full w-full object-cover"
                   />
