@@ -12,7 +12,6 @@ import { AuthContext } from "../../context/AuthContext"
  *   isProvider,
  *   login(userId, role),
  *   logout(),
- *   switchRole(newRole)
  * }
  */
 export function useAuth() {

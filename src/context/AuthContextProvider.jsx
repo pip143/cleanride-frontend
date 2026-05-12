@@ -33,14 +33,6 @@ export function AuthProvider({ children }) {
     setIsAuthenticated(false)
   }, [])
 
-  // Switch role function (for testing/switching)
-  const switchRole = useCallback((newRole) => {
-    if (userId && [ROLES.CUSTOMER, ROLES.PROVIDER].includes(newRole)) {
-      localStorage.setItem("userRole", newRole)
-      setRole(newRole)
-    }
-  }, [userId])
-
   const value = {
     userId,
     role,
@@ -48,7 +40,6 @@ export function AuthProvider({ children }) {
     isLoading,
     login,
     logout,
-    switchRole,
     isCustomer: role === ROLES.CUSTOMER,
     isProvider: role === ROLES.PROVIDER,
   }

@@ -4,7 +4,7 @@ import { useAuth } from "../shared/hooks/useAuth"
 export function Navigation() {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isAuthenticated, logout, isProvider, switchRole } = useAuth()
+  const { isAuthenticated, logout, isProvider } = useAuth()
 
   const handleLogout = () => {
     logout()
@@ -67,28 +67,9 @@ export function Navigation() {
                   </button>
                 ))}
               </div>
-
-              {/* Role Indicator & Switch */}
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-blue-100 text-sm font-medium">
-                    {isProvider ? "Provider" : "Customer"}
-                  </span>
-                  {switchRole && (
-                    <button
-                      onClick={() => {
-                        // For testing: switch between roles
-                        switchRole(isProvider ? "CUSTOMER" : "PROVIDER")
-                        navigate(isProvider ? "/dashboard" : "/provider/dashboard")
-                      }}
-                      className="text-xs px-2 py-1 bg-blue-800 text-blue-100 rounded hover:bg-blue-900 transition"
-                      title="Switch role (testing)"
-                    >
-                      Switch
-                    </button>
-                  )}
-                </div>
-              </div>
+              <span className="text-blue-100 text-sm font-medium">
+                {isProvider ? "Provider" : "Customer"}
+              </span>
 
               {/* Logout Button */}
               <button 
