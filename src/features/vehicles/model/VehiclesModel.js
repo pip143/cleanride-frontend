@@ -3,6 +3,15 @@
  */
 import axiosInstance from "../../../core/api/axiosInstance"
 
+function normalizeVehiclePayload(vehicleData) {
+  const plate = vehicleData.licensePlate || vehicleData.plateNumber || ""
+  return {
+    ...vehicleData,
+    licensePlate: plate,
+    plateNumber: plate,
+  }
+}
+
 const vehiclesModel = {
   /**
    * Get all vehicles for a user
@@ -24,7 +33,7 @@ const vehiclesModel = {
    * Create a vehicle
    */
   async createVehicle(vehicleData) {
-    const { userId, ...data } = vehicleData
+    const { userId, ...data } = normalizeVehiclePayload(vehicleData)
     const response = await axiosInstance.post(`/api/vehicles/${userId}`, data)
     return response.data
   },
@@ -33,7 +42,7 @@ const vehiclesModel = {
    * Update a vehicle
    */
   async updateVehicle(vehicleId, vehicleData) {
-    const response = await axiosInstance.put(`/api/vehicles/${vehicleId}`, vehicleData)
+    const response = await axiosInstance.put(`/api/vehicles/${vehicleId}`, normalizeVehiclePayload(vehicleData))
     return response.data
   },
 

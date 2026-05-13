@@ -105,7 +105,7 @@ export default function VehiclesListView() {
                   {vehicle.make} {vehicle.model}
                 </h3>
                 <p className="text-sm text-blue-600 font-medium">{vehicle.year}</p>
-                <p className="text-sm text-blue-700 mt-2">📋 {vehicle.licensePlate}</p>
+                <p className="text-sm text-blue-700 mt-2">Plate: {vehicle.licensePlate || vehicle.plateNumber || "N/A"}</p>
                 <p className="text-xs text-blue-600 mt-1">{vehicle.color}</p>
                 <div className="mt-4 flex gap-2">
                   <button

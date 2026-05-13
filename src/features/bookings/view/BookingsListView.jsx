@@ -175,7 +175,7 @@ function BookingCard({ booking, onCancel }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
         <InfoCell label="Vehicle" value={booking.vehicleName} />
         <InfoCell label="Date" value={booking.scheduledDate ? new Date(`${booking.scheduledDate}T00:00`).toLocaleDateString() : "No date"} />
-        <InfoCell label="Time" value={booking.scheduledTime || "No time"} />
+        <InfoCell label="Time" value={formatBookingTime(booking.scheduledTime)} />
         <InfoCell label="Duration" value={booking.displayDuration} />
       </div>
 
@@ -217,6 +217,15 @@ function BookingCard({ booking, onCancel }) {
   )
 }
 
+function formatBookingTime(time) {
+  if (!time) return "No time"
+  const normalized = String(time).slice(0, 5)
+  const [hours, minutes] = normalized.split(":")
+  if (!hours || !minutes) return time
+  const date = new Date()
+  date.setHours(Number(hours), Number(minutes), 0, 0)
+  return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
+}
 function InfoCell({ label, value }) {
   return (
     <div>

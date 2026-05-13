@@ -13,7 +13,13 @@ export default function VehicleFormView() {
   const location = useLocation()
   const { userId } = useAuth()
 
-  const editingVehicle = location.state?.vehicle
+  const rawEditingVehicle = location.state?.vehicle
+  const editingVehicle = rawEditingVehicle
+    ? {
+        ...rawEditingVehicle,
+        licensePlate: rawEditingVehicle.licensePlate || rawEditingVehicle.plateNumber || "",
+      }
+    : null
   const isEditing = !!id && !!editingVehicle
 
   const [formData, setFormData] = useState({
@@ -59,10 +65,14 @@ export default function VehicleFormView() {
       let result
 
       if (isEditing) {
-        result = await vehiclesPresenter.updateVehicle(id, formData)
+        result = await vehiclesPresenter.updateVehicle(id, {
+          ...formData,
+          plateNumber: formData.licensePlate,
+        })
       } else {
         result = await vehiclesPresenter.createVehicle({
           ...formData,
+          plateNumber: formData.licensePlate,
           userId
         })
       }

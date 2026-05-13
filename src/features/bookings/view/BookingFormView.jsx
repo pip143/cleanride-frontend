@@ -1,46 +1,74 @@
-import { useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { useNavigate, useParams, useLocation } from "react-router-dom"
 import { useAuth } from "../../../shared/hooks/useAuth"
 import bookingsPresenter from "../presenter/useBookingsPresenter"
+import servicesModel from "../../services/model/ServicesModel"
+import vehiclesModel from "../../vehicles/model/VehiclesModel"
 import { LoadingSpinner } from "../../../components/LoadingSpinner"
 
-/**
- * Booking Form View
- * Form to create or edit a booking
- */
 export default function BookingFormView() {
   const navigate = useNavigate()
   const { id } = useParams()
   const location = useLocation()
   const { userId } = useAuth()
+  const query = new URLSearchParams(location.search)
 
   const editingBooking = location.state?.booking
+  const selectedService = location.state?.selectedService
+  const serviceIdFromUrl = query.get("serviceId") || ""
   const isEditing = !!id && !!editingBooking
 
+  const [vehicles, setVehicles] = useState([])
+  const [services, setServices] = useState([])
+  const [loadingOptions, setLoadingOptions] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [errors, setErrors] = useState({})
+
   const [formData, setFormData] = useState({
-    vehicleId: "",
-    serviceId: "",
-    bookingDate: "",
-    timeSlot: "",
-    notes: "",
-    ...(editingBooking || {})
+    vehicleId: editingBooking?.vehicle?.id || editingBooking?.vehicleId || "",
+    serviceId: selectedService?.id || editingBooking?.service?.id || editingBooking?.serviceId || serviceIdFromUrl,
+    bookingDate: editingBooking?.bookingDate || editingBooking?.scheduledDate || "",
+    timeSlot: editingBooking?.bookingTime || editingBooking?.scheduledTime || editingBooking?.timeSlot || "",
+    notes: editingBooking?.notes || "",
   })
 
-  const [loading, setLoading] = useState(false)
-  const [errors, setErrors] = useState({})
+  useEffect(() => {
+    if (!userId) return
+
+    async function loadOptions() {
+      setLoadingOptions(true)
+      setErrors({})
+      try {
+        const [vehiclesData, servicesData] = await Promise.all([
+          vehiclesModel.getVehicles(userId),
+          servicesModel.getServices(),
+        ])
+        setVehicles(vehiclesData || [])
+        setServices(servicesData || [])
+      } catch {
+        setErrors({ submit: "Unable to load vehicles and services. Please try again." })
+      } finally {
+        setLoadingOptions(false)
+      }
+    }
+
+    loadOptions()
+  }, [userId])
+
+  const selectedServiceData = useMemo(() => {
+    const serviceId = String(formData.serviceId || "")
+    if (!serviceId) return null
+    return services.find((service) => String(service.id) === serviceId) || selectedService || null
+  }, [services, selectedService, formData.serviceId])
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value
-    }))
-    // Clear error for this field
+    setFormData((prev) => ({ ...prev, [name]: value }))
     if (errors[name]) {
       setErrors((prev) => {
-        const newErrors = { ...prev }
-        delete newErrors[name]
-        return newErrors
+        const next = { ...prev }
+        delete next[name]
+        return next
       })
     }
   }
@@ -48,25 +76,25 @@ export default function BookingFormView() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // Validate
     const validation = bookingsPresenter.validateBooking(formData)
     if (!validation.isValid) {
       setErrors(validation.errors)
       return
     }
 
-    setLoading(true)
+    setSaving(true)
     try {
-      let result
-
-      if (isEditing) {
-        result = await bookingsPresenter.updateBooking(id, formData)
-      } else {
-        result = await bookingsPresenter.createBooking({
-          ...formData,
-          userId
-        })
+      const payload = {
+        ...formData,
+        userId,
+        vehicleId: Number(formData.vehicleId),
+        serviceId: Number(formData.serviceId),
+        bookingTime: formData.timeSlot,
       }
+
+      const result = isEditing
+        ? await bookingsPresenter.updateBooking(id, payload)
+        : await bookingsPresenter.createBooking(payload)
 
       if (result.success) {
         navigate("/bookings")
@@ -76,153 +104,101 @@ export default function BookingFormView() {
     } catch {
       setErrors({ submit: "Failed to save booking" })
     } finally {
-      setLoading(false)
+      setSaving(false)
     }
   }
 
-  if (loading) return <LoadingSpinner />
+  if (loadingOptions || saving) return <LoadingSpinner />
 
   return (
-    <div style={styles.container}>
-      <h1>{isEditing ? "Edit Booking" : "Create Booking"}</h1>
-
-      <form onSubmit={handleSubmit} style={styles.form}>
-        {errors.submit && (
-          <div style={styles.error}>{errors.submit}</div>
-        )}
-
-        <div style={styles.formGroup}>
-          <label>Vehicle</label>
-          <select
-            name="vehicleId"
-            value={formData.vehicleId}
-            onChange={handleChange}
-            style={styles.input}
-          >
-            <option value="">Select a vehicle</option>
-            {/* Options will be populated from vehicles list */}
-          </select>
-          {errors.vehicleId && <span style={styles.fieldError}>{errors.vehicleId}</span>}
+    <div className="min-h-screen bg-blue-50 px-6 py-10">
+      <div className="max-w-3xl mx-auto">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-blue-950">{isEditing ? "Edit Booking" : "Create Booking"}</h1>
+          <p className="text-blue-700 mt-1">Choose your vehicle, confirm the service, and schedule your visit.</p>
         </div>
 
-        <div style={styles.formGroup}>
-          <label>Service</label>
-          <select
-            name="serviceId"
-            value={formData.serviceId}
-            onChange={handleChange}
-            style={styles.input}
-          >
-            <option value="">Select a service</option>
-            {/* Options will be populated from services list */}
-          </select>
-          {errors.serviceId && <span style={styles.fieldError}>{errors.serviceId}</span>}
-        </div>
+        <form onSubmit={handleSubmit} className="bg-white border-2 border-blue-100 rounded-xl shadow-sm p-6 space-y-5">
+          {errors.submit && <div className="rounded-lg bg-red-50 border border-red-200 p-3 text-red-700">{errors.submit}</div>}
 
-        <div style={styles.formGroup}>
-          <label>Booking Date</label>
-          <input
-            type="date"
-            name="bookingDate"
-            value={formData.bookingDate}
-            onChange={handleChange}
-            style={styles.input}
-          />
-          {errors.bookingDate && <span style={styles.fieldError}>{errors.bookingDate}</span>}
-        </div>
+          {vehicles.length === 0 && (
+            <div className="rounded-lg bg-yellow-50 border border-yellow-200 p-4 text-yellow-800 flex items-center justify-between gap-4">
+              <span>You need to add a vehicle before creating a booking.</span>
+              <button type="button" onClick={() => navigate("/vehicles/new")} className="px-4 py-2 rounded-lg bg-yellow-500 text-white font-medium">Add Vehicle</button>
+            </div>
+          )}
 
-        <div style={styles.formGroup}>
-          <label>Time Slot</label>
-          <input
-            type="time"
-            name="timeSlot"
-            value={formData.timeSlot}
-            onChange={handleChange}
-            style={styles.input}
-          />
-          {errors.timeSlot && <span style={styles.fieldError}>{errors.timeSlot}</span>}
-        </div>
+          <div>
+            <label className="block text-sm font-semibold text-blue-950 mb-2">Vehicle</label>
+            <select name="vehicleId" value={formData.vehicleId} onChange={handleChange} className="w-full rounded-lg border-2 border-blue-100 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="">Select a vehicle</option>
+              {vehicles.map((vehicle) => {
+                const plate = vehicle.licensePlate || vehicle.plateNumber || "No plate"
+                return (
+                  <option key={vehicle.id} value={vehicle.id}>
+                    {[vehicle.year, vehicle.make, vehicle.model].filter(Boolean).join(" ")} - {plate}
+                  </option>
+                )
+              })}
+            </select>
+            {errors.vehicleId && <p className="text-sm text-red-600 mt-1">{errors.vehicleId}</p>}
+          </div>
 
-        <div style={styles.formGroup}>
-          <label>Notes</label>
-          <textarea
-            name="notes"
-            value={formData.notes}
-            onChange={handleChange}
-            style={{ ...styles.input, minHeight: "100px" }}
-            placeholder="Any special requests..."
-          />
-        </div>
+          {selectedServiceData ? (
+            <div className="rounded-xl border-2 border-blue-200 bg-blue-50 p-4">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-semibold text-blue-700">Selected service</p>
+                  <h2 className="text-xl font-bold text-blue-950">{selectedServiceData.name}</h2>
+                  <p className="text-blue-700 mt-1">{selectedServiceData.description}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xl font-bold text-blue-700">${Number(selectedServiceData.price || 0).toFixed(2)}</p>
+                  <button type="button" onClick={() => setFormData((prev) => ({ ...prev, serviceId: "" }))} className="text-sm text-blue-700 underline mt-2">Change</button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-semibold text-blue-950 mb-2">Service</label>
+              <select name="serviceId" value={formData.serviceId} onChange={handleChange} className="w-full rounded-lg border-2 border-blue-100 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Select a service</option>
+                {services.map((service) => (
+                  <option key={service.id} value={service.id}>{service.name} - ${Number(service.price || 0).toFixed(2)}</option>
+                ))}
+              </select>
+              {errors.serviceId && <p className="text-sm text-red-600 mt-1">{errors.serviceId}</p>}
+            </div>
+          )}
 
-        <div style={styles.buttonGroup}>
-          <button type="submit" style={styles.submitBtn} disabled={loading}>
-            {isEditing ? "Update Booking" : "Create Booking"}
-          </button>
-          <button
-            type="button"
-            style={styles.cancelBtn}
-            onClick={() => navigate("/bookings")}
-          >
-            Cancel
-          </button>
-        </div>
-      </form>
+          <div className="grid md:grid-cols-2 gap-5">
+            <div>
+              <label className="block text-sm font-semibold text-blue-950 mb-2">Booking Date</label>
+              <input type="date" name="bookingDate" value={formData.bookingDate} onChange={handleChange} min={new Date().toISOString().split("T")[0]} className="w-full rounded-lg border-2 border-blue-100 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              {errors.bookingDate && <p className="text-sm text-red-600 mt-1">{errors.bookingDate}</p>}
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-blue-950 mb-2">Time</label>
+              <input type="time" name="timeSlot" value={formData.timeSlot} onChange={handleChange} className="w-full rounded-lg border-2 border-blue-100 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              {errors.timeSlot && <p className="text-sm text-red-600 mt-1">{errors.timeSlot}</p>}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-blue-950 mb-2">Notes</label>
+            <textarea name="notes" value={formData.notes} onChange={handleChange} className="w-full min-h-28 rounded-lg border-2 border-blue-100 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Any special requests..." />
+          </div>
+
+          <div className="flex gap-3 pt-2">
+            <button type="submit" disabled={vehicles.length === 0} className="flex-1 rounded-lg bg-blue-600 px-5 py-3 text-white font-semibold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed">
+              {isEditing ? "Update Booking" : "Create Booking"}
+            </button>
+            <button type="button" onClick={() => navigate("/bookings")} className="flex-1 rounded-lg bg-gray-200 px-5 py-3 text-gray-900 font-semibold hover:bg-gray-300">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
-}
-
-const styles = {
-  container: {
-    width: "100%",
-    maxWidth: "600px",
-    margin: "0 auto",
-    padding: "20px"
-  },
-  form: {
-    display: "grid",
-    gap: "20px"
-  },
-  formGroup: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px"
-  },
-  input: {
-    padding: "10px",
-    border: "1px solid #ccc",
-    borderRadius: "4px",
-    fontSize: "14px"
-  },
-  fieldError: {
-    color: "#f44336",
-    fontSize: "12px"
-  },
-  error: {
-    backgroundColor: "#ffebee",
-    color: "#c62828",
-    padding: "10px",
-    borderRadius: "4px"
-  },
-  buttonGroup: {
-    display: "flex",
-    gap: "10px"
-  },
-  submitBtn: {
-    flex: 1,
-    padding: "10px 20px",
-    backgroundColor: "#007bff",
-    color: "white",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer"
-  },
-  cancelBtn: {
-    flex: 1,
-    padding: "10px 20px",
-    backgroundColor: "#ccc",
-    color: "#000",
-    border: "none",
-    borderRadius: "4px",
-    cursor: "pointer"
-  }
 }

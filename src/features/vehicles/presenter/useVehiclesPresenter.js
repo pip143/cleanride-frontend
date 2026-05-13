@@ -76,11 +76,16 @@ class VehiclesPresenter {
    * Transform vehicles
    */
   transformVehicles(vehicles) {
-    return vehicles.map((v) => ({
-      ...v,
-      displayName: `${v.year} ${v.make} ${v.model}`,
-      displayPlate: v.licensePlate?.toUpperCase() || "N/A"
-    }))
+    return vehicles.map((v) => {
+      const normalizedPlate = v.licensePlate || v.plateNumber || ""
+      return {
+        ...v,
+        licensePlate: normalizedPlate,
+        plateNumber: normalizedPlate,
+        displayName: `${v.year} ${v.make} ${v.model}`,
+        displayPlate: normalizedPlate ? normalizedPlate.toUpperCase() : "N/A"
+      }
+    })
   }
 
   /**

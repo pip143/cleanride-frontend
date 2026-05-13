@@ -112,7 +112,7 @@ export default function ServicesView() {
                   </span>
                   <button
                     onClick={() => {
-                      navigate("/bookings/new", {
+                      navigate(`/bookings/new?serviceId=${service.id}`, {
                         state: { selectedService: service },
                       })
                       showToast(`Selected ${service.name}`, "info")
