@@ -2,11 +2,11 @@ import axios from "axios"
 
 /**
  * Axios instance with base configuration
- * Base URL: http://localhost:8080
+ * Base URL: deployed Render backend by default
  * Content-Type: application/json
  */
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "https://cleanride-backend-1.onrender.com",
   headers: {
     "Content-Type": "application/json"
   }
