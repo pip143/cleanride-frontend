@@ -130,15 +130,31 @@ export const useProviderPaymentsPresenter = () => {
   })
 
   /**
-   * Transform payment data for display
+   * Transform payment data for display.
+   * The backend returns bookings for provider payments, so read booking/service fields.
    */
   const transformPayments = (rawPayments) => {
-    return (rawPayments || []).map((payment) => ({
-      ...payment,
-      displayAmount: `$${Number(payment.amount || 0).toFixed(2)}`,
-      displayDate: new Date(payment.date).toLocaleDateString(),
-      statusColor: getPaymentStatusColor(payment.status),
-    }))
+    return (rawPayments || []).map((payment) => {
+      const service = payment.service || {}
+      const amount = service.price || payment.amount || payment.price || 0
+      const dateValue = payment.bookingDate || payment.createdAt || payment.date
+      const displayDate = dateValue
+        ? new Date(dateValue).toLocaleDateString()
+        : "No date"
+      const status = payment.paymentStatus || payment.status || "UNPAID"
+
+      return {
+        ...payment,
+        description: service.name
+          ? `${service.name} Payment`
+          : payment.description || "Service Payment",
+        amount,
+        status,
+        displayAmount: `$${Number(amount).toFixed(2)}`,
+        displayDate,
+        statusColor: getPaymentStatusColor(status),
+      }
+    })
   }
 
   /**
@@ -159,7 +175,12 @@ export const useProviderPaymentsPresenter = () => {
   const getPaymentStatusColor = (status) => {
     const colors = {
       completed: "text-green-600 bg-green-50",
+      COMPLETED: "text-green-600 bg-green-50",
+      PAID: "text-green-600 bg-green-50",
       pending: "text-yellow-600 bg-yellow-50",
+      PENDING: "text-yellow-600 bg-yellow-50",
+      UNPAID: "text-yellow-600 bg-yellow-50",
+      CONFIRMED: "text-blue-600 bg-blue-50",
       failed: "text-red-600 bg-red-50",
     }
     return colors[status] || "text-gray-600 bg-gray-50"
@@ -171,8 +192,13 @@ export const useProviderPaymentsPresenter = () => {
   const getPayoutStatusColor = (status) => {
     const colors = {
       completed: "text-green-600 bg-green-50",
+      COMPLETED: "text-green-600 bg-green-50",
+      PAID: "text-green-600 bg-green-50",
       processing: "text-blue-600 bg-blue-50",
       pending: "text-yellow-600 bg-yellow-50",
+      PENDING: "text-yellow-600 bg-yellow-50",
+      UNPAID: "text-yellow-600 bg-yellow-50",
+      CONFIRMED: "text-blue-600 bg-blue-50",
       failed: "text-red-600 bg-red-50",
     }
     return colors[status] || "text-gray-600 bg-gray-50"
