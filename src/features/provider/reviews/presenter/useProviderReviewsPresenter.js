@@ -106,12 +106,35 @@ export const useProviderReviewsPresenter = () => {
    * Transform raw review data
    */
   const transformReviews = (rawReviews) => {
-    return rawReviews.map((review) => ({
-      ...review,
-      displayDate: new Date(review.createdDate).toLocaleDateString(),
-      ratingColor: getRatingColor(review.rating),
-      ratingStars: generateStarArray(review.rating),
-    }))
+    return rawReviews.map((review) => {
+      const booking = review.booking || {}
+      const service = review.service || booking.service || {}
+      const customer = review.user || review.customer || booking.user || {}
+      const createdAt = review.createdAt || review.createdDate || review.updatedAt
+
+      return {
+        ...review,
+        customerName:
+          review.customerName || customer.name || customer.fullName || customer.username || "Customer",
+        serviceName:
+          review.serviceName || service.name || service.serviceName || booking.serviceName || "Service",
+        displayDate: formatDisplayDate(createdAt),
+        ratingColor: getRatingColor(review.rating),
+        ratingStars: generateStarArray(review.rating),
+      }
+    })
+  }
+
+  const formatDisplayDate = (value) => {
+    if (!value) return "No date"
+    const parsedDate = new Date(value)
+    if (Number.isNaN(parsedDate.getTime())) return "No date"
+
+    return parsedDate.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    })
   }
 
   /**
