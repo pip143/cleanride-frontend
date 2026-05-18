@@ -66,10 +66,11 @@ export default function ReviewFormView() {
     e.preventDefault()
 
     // Validate using centralized validator
-    const validation = validateReview(formData.comment)
-    if (validation) {
-      showToast(validation, "error")
-      setErrors({ comment: validation })
+    const validationErrors = validateReview(formData)
+    if (validationErrors) {
+      const firstError = Object.values(validationErrors)[0] || "Please check your review details"
+      showToast(firstError, "error")
+      setErrors(validationErrors)
       return
     }
 
@@ -93,6 +94,26 @@ export default function ReviewFormView() {
     } finally {
       setLoading(false)
     }
+  }
+
+  if (!bookingId) {
+    return (
+      <div className="min-h-screen bg-blue-50 flex items-center justify-center px-6">
+        <div className="bg-white rounded-lg shadow-md border-2 border-blue-200 p-8 max-w-md text-center">
+          <h1 className="text-2xl font-bold text-blue-900 mb-2">No booking selected</h1>
+          <p className="text-gray-600 mb-6">
+            Please choose a completed booking before leaving a review.
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate("/bookings")}
+            className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+          >
+            Back to Bookings
+          </button>
+        </div>
+      </div>
+    )
   }
 
   if (loading) return <LoadingSpinner />
