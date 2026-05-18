@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom"
 import { useAuth } from "../../shared/hooks/useAuth"
-import { ROLES } from "../../core/constants"
+import { normalizeRole, isProviderRole } from "../../core/constants"
 
 /**
  * ProtectedRoute component
@@ -18,7 +18,7 @@ export function ProtectedRoute({ children }) {
 
 /**
  * RoleProtectedRoute component
- * Protects routes by role (CUSTOMER or PROVIDER)
+ * Protects routes by role (CUSTOMER, STAFF, or ADMIN)
  * Redirects to unauthorized page if user role doesn't match
  */
 export function RoleProtectedRoute({ children, allowedRoles = [] }) {
@@ -30,8 +30,11 @@ export function RoleProtectedRoute({ children, allowedRoles = [] }) {
   }
 
   // Not in allowed roles - redirect to appropriate dashboard
-  if (!allowedRoles.includes(role)) {
-    if (role === ROLES.PROVIDER) {
+  const normalizedRole = normalizeRole(role)
+  const normalizedAllowedRoles = allowedRoles.map(normalizeRole)
+
+  if (!normalizedAllowedRoles.includes(normalizedRole)) {
+    if (isProviderRole(normalizedRole)) {
       return <Navigate to="/provider/dashboard" replace />
     }
     return <Navigate to="/dashboard" replace />

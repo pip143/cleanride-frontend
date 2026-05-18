@@ -177,9 +177,18 @@ function BookingCard({ booking, onCancel }) {
         <InfoCell label="Date" value={booking.scheduledDate ? new Date(`${booking.scheduledDate}T00:00`).toLocaleDateString() : "No date"} />
         <InfoCell label="Time" value={formatBookingTime(booking.scheduledTime)} />
         <InfoCell label="Duration" value={booking.displayDuration} />
+        <InfoCell label="Payment" value={booking.paymentStatus || "UNPAID"} />
       </div>
 
       <div className="flex gap-2 justify-end">
+        {booking.isPayable && (
+          <button
+            onClick={() => navigate("/payment/method", { state: { booking } })}
+            className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm font-medium"
+          >
+            Pay Now
+          </button>
+        )}
         {!booking.isLocked && (
           <button
             onClick={() => navigate(`/bookings/${booking.id}/edit`, { state: { booking } })}

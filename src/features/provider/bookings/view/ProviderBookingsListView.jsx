@@ -54,8 +54,13 @@ export const ProviderBookingsListView = () => {
     }
   }
 
-  const handleCompleteBooking = async (bookingId) => {
-    const result = await presenter.completeBooking(bookingId)
+  const handleCompleteBooking = async (booking) => {
+    if (!booking.isPaid) {
+      showToast("Customer payment is still unpaid", "error")
+      return
+    }
+
+    const result = await presenter.completeBooking(booking.id)
     if (result.success) {
       showToast("Booking marked as completed", "success")
     } else {
@@ -148,6 +153,12 @@ export const ProviderBookingsListView = () => {
                         <span className="font-semibold">Duration:</span>{" "}
                         {booking.duration || "N/A"}
                       </div>
+                      <div>
+                        <span className="font-semibold">Payment:</span>{" "}
+                        <span className={booking.isPaid ? "text-green-600 font-semibold" : "text-yellow-700 font-semibold"}>
+                          {booking.paymentStatus}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <span
@@ -183,10 +194,10 @@ export const ProviderBookingsListView = () => {
 
                   {booking.status === BOOKING_STATUSES.ACCEPTED && (
                     <button
-                      onClick={() => handleCompleteBooking(booking.id)}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                      onClick={() => handleCompleteBooking(booking)}
+                      className={`px-4 py-2 rounded-lg transition-colors font-semibold ${booking.isPaid ? "bg-blue-600 text-white hover:bg-blue-700" : "bg-gray-200 text-gray-600 cursor-not-allowed"}`}
                     >
-                      Mark Complete
+                      {booking.isPaid ? "Mark Complete" : "Awaiting Payment"}
                     </button>
                   )}
 

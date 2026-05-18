@@ -86,6 +86,21 @@ class BookingsPresenter {
   }
 
   /**
+   * Mark booking as paid
+   */
+  async payBooking(bookingId) {
+    try {
+      const result = await bookingsModel.payBooking(bookingId)
+      return { success: true, data: result, error: null }
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        error: error.response?.data?.message || error.response?.data?.error || "Failed to pay booking"
+      }
+    }
+  }
+  /**
    * Transform bookings for display
    */
   transformBookings(bookings) {
@@ -95,6 +110,7 @@ class BookingsPresenter {
       const normalizedStatus = this.normalizeStatus(booking.status)
       const vehicleName = [vehicle.year, vehicle.make, vehicle.model].filter(Boolean).join(" ")
       const hasReview = Boolean(booking.hasReview)
+      const paymentStatus = booking.paymentStatus || "UNPAID"
 
       return {
         ...booking,
@@ -106,9 +122,12 @@ class BookingsPresenter {
         scheduledTime: booking.bookingTime || booking.timeSlot || booking.scheduledTime || "",
         displayPrice: `$${Number(service.price || booking.totalPrice || 0).toFixed(2)}`,
         displayDuration: service.duration ? `${service.duration} min` : "N/A",
+        paymentStatus,
+        isPaid: paymentStatus === "PAID",
         statusBadge: this.getStatusBadge(normalizedStatus),
         isEditable: ["PENDING", "CONFIRMED"].includes(normalizedStatus) && !hasReview,
-        isCancelable: ["PENDING", "CONFIRMED"].includes(normalizedStatus) && !hasReview,
+        isCancelable: ["PENDING", "CONFIRMED"].includes(normalizedStatus) && !hasReview && paymentStatus !== "PAID",
+        isPayable: normalizedStatus === "CONFIRMED" && paymentStatus !== "PAID",
         isReviewable: normalizedStatus === "COMPLETED" && !hasReview,
         isLocked: normalizedStatus === "COMPLETED" && hasReview
       }

@@ -50,6 +50,13 @@ const bookingsModel = {
   },
 
   /**
+   * Mark a booking as paid
+   */
+  async payBooking(bookingId) {
+    const response = await axiosInstance.patch(`/api/bookings/${bookingId}/pay`)
+    return response.data
+  },
+  /**
    * Delete a booking
    */
   async deleteBooking(bookingId) {

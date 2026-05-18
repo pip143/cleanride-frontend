@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import axiosInstance from "../services/api"
 import { useAuth } from "../shared/hooks/useAuth"
+import { isProviderRole } from "../core/constants"
 import { CarIcon, UserIcon } from "../components/Icons"
 import "../styles/auth.css"
 
@@ -65,7 +66,7 @@ export default function Register() {
       } else {
         const userRole = response.data?.role || "CUSTOMER"
         login(String(userId), userRole)
-        navigate(userRole === "PROVIDER" ? "/provider/dashboard" : "/dashboard")
+        navigate(isProviderRole(userRole) ? "/provider/dashboard" : "/dashboard")
       }
     } catch (err) {
       const msg = err.response?.data?.error

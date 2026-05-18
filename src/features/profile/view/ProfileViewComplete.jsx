@@ -8,6 +8,8 @@ const apiUrl = (path) => {
   return `${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`
 }
 
+const formatProfileRole = (role) => (role === "STAFF" || role === "ADMIN" ? "Provider" : "Customer")
+
 export default function ProfileViewComplete() {
   const { userId } = useAuth()
 
@@ -217,7 +219,7 @@ export default function ProfileViewComplete() {
             <div>
               <h2 className="text-2xl font-bold text-slate-900">{profile?.name}</h2>
               <p className="text-slate-600">{profile?.email}</p>
-              <p className="text-sm text-slate-500 mt-1">{profile?.role} account</p>
+              <p className="text-sm text-slate-500 mt-1">{formatProfileRole(profile?.role)} account</p>
             </div>
           </div>
         </div>

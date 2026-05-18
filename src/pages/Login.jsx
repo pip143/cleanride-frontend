@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { useAuth } from "../shared/hooks/useAuth"
+import { isProviderRole } from "../core/constants"
 import axiosInstance from "../services/api"
 import { CarIcon } from "../components/Icons"
 import "../styles/auth.css"
@@ -52,7 +53,7 @@ export default function Login() {
         login(String(userId), userRole)
         
         // Navigate based on role
-        if (userRole === "PROVIDER") {
+        if (isProviderRole(userRole)) {
           navigate("/provider/dashboard")
         } else {
           navigate("/dashboard")

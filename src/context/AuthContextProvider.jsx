@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react"
 import { AuthContext } from "./AuthContext"
-import { ROLES } from "../core/constants"
+import { ROLES, normalizeRole, isProviderRole } from "../core/constants"
 
 // AuthProvider component
 export function AuthProvider({ children }) {
@@ -9,18 +9,18 @@ export function AuthProvider({ children }) {
     return localStorage.getItem("userId") || null
   })
   const [role, setRole] = useState(() => {
-    // Initialize role from localStorage (CUSTOMER or PROVIDER)
-    return localStorage.getItem("userRole") || ROLES.CUSTOMER
+    return normalizeRole(localStorage.getItem("userRole") || ROLES.CUSTOMER)
   })
   const [isAuthenticated, setIsAuthenticated] = useState(!!userId)
   const [isLoading] = useState(false)
 
   // Login function - accepts userId and optionally role
   const login = useCallback((userId, userRole = ROLES.CUSTOMER) => {
+    const normalizedRole = normalizeRole(userRole)
     localStorage.setItem("userId", userId)
-    localStorage.setItem("userRole", userRole)
+    localStorage.setItem("userRole", normalizedRole)
     setUserId(userId)
-    setRole(userRole)
+    setRole(normalizedRole)
     setIsAuthenticated(true)
   }, [])
 
@@ -41,7 +41,7 @@ export function AuthProvider({ children }) {
     login,
     logout,
     isCustomer: role === ROLES.CUSTOMER,
-    isProvider: role === ROLES.PROVIDER,
+    isProvider: isProviderRole(role),
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

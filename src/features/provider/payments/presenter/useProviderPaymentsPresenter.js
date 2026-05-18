@@ -141,7 +141,7 @@ export const useProviderPaymentsPresenter = () => {
       const displayDate = dateValue
         ? new Date(dateValue).toLocaleDateString()
         : "No date"
-      const status = payment.paymentStatus || payment.status || "UNPAID"
+      const status = payment.paymentStatus || "UNPAID"
 
       return {
         ...payment,

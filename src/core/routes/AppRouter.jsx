@@ -155,7 +155,7 @@ export function AppRouter() {
       <Route
         path="/provider/dashboard"
         element={
-          <RoleProtectedRoute allowedRoles={[ROLES.PROVIDER]}>
+          <RoleProtectedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]}>
             <ProviderDashboardView />
           </RoleProtectedRoute>
         }
@@ -165,7 +165,7 @@ export function AppRouter() {
       <Route
         path="/provider/services"
         element={
-          <RoleProtectedRoute allowedRoles={[ROLES.PROVIDER]}>
+          <RoleProtectedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]}>
             <ProviderServicesListView />
           </RoleProtectedRoute>
         }
@@ -173,7 +173,7 @@ export function AppRouter() {
       <Route
         path="/provider/services/new"
         element={
-          <RoleProtectedRoute allowedRoles={[ROLES.PROVIDER]}>
+          <RoleProtectedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]}>
             <ProviderServiceFormView />
           </RoleProtectedRoute>
         }
@@ -181,7 +181,7 @@ export function AppRouter() {
       <Route
         path="/provider/services/:id/edit"
         element={
-          <RoleProtectedRoute allowedRoles={[ROLES.PROVIDER]}>
+          <RoleProtectedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]}>
             <ProviderServiceFormView />
           </RoleProtectedRoute>
         }
@@ -191,7 +191,7 @@ export function AppRouter() {
       <Route
         path="/provider/bookings"
         element={
-          <RoleProtectedRoute allowedRoles={[ROLES.PROVIDER]}>
+          <RoleProtectedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]}>
             <ProviderBookingsListView />
           </RoleProtectedRoute>
         }
@@ -201,7 +201,7 @@ export function AppRouter() {
       <Route
         path="/provider/reviews"
         element={
-          <RoleProtectedRoute allowedRoles={[ROLES.PROVIDER]}>
+          <RoleProtectedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]}>
             <ProviderReviewsView />
           </RoleProtectedRoute>
         }
@@ -211,7 +211,7 @@ export function AppRouter() {
       <Route
         path="/provider/payments"
         element={
-          <RoleProtectedRoute allowedRoles={[ROLES.PROVIDER]}>
+          <RoleProtectedRoute allowedRoles={[ROLES.STAFF, ROLES.ADMIN]}>
             <ProviderPaymentsView />
           </RoleProtectedRoute>
         }

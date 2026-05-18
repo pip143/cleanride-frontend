@@ -144,6 +144,8 @@ export const useProviderBookingsPresenter = () => {
         serviceName: service.name || "Service",
         vehicleType: vehicle.vehicleType || vehicle.licensePlate || vehicle.plateNumber || "Vehicle",
         duration: service.duration ? `${service.duration} min` : "N/A",
+        paymentStatus: booking.paymentStatus || "UNPAID",
+        isPaid: (booking.paymentStatus || "UNPAID") === "PAID",
         displayPrice: `$${Number(service.price || booking.price || 0).toFixed(2)}`,
         displayDate: bookingDateTime ? bookingDateTime.toLocaleDateString() : "No date",
         displayTime: bookingDateTime
