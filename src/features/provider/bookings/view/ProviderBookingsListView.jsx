@@ -53,6 +53,14 @@ export const ProviderBookingsListView = () => {
       }
     }
   }
+  const handleMarkCashPaid = async (booking) => {
+    const result = await presenter.markBookingPaid(booking.id)
+    if (result.success) {
+      showToast("Cash payment marked as paid", "success")
+    } else {
+      showToast(result.error, "error")
+    }
+  }
 
   const handleCompleteBooking = async (booking) => {
     if (!booking.isPaid) {
@@ -190,6 +198,14 @@ export const ProviderBookingsListView = () => {
                         Reject
                       </button>
                     </>
+                  )}
+                  {!booking.isPaid && booking.status !== BOOKING_STATUSES.REJECTED && (
+                    <button
+                      onClick={() => handleMarkCashPaid(booking)}
+                      className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors font-semibold"
+                    >
+                      Mark Cash Paid
+                    </button>
                   )}
 
                   {booking.status === BOOKING_STATUSES.ACCEPTED && (

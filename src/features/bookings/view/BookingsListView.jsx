@@ -177,7 +177,7 @@ function BookingCard({ booking, onCancel }) {
         <InfoCell label="Date" value={booking.scheduledDate ? new Date(`${booking.scheduledDate}T00:00`).toLocaleDateString() : "No date"} />
         <InfoCell label="Time" value={formatBookingTime(booking.scheduledTime)} />
         <InfoCell label="Duration" value={booking.displayDuration} />
-        <InfoCell label="Payment" value={booking.paymentStatus || "UNPAID"} />
+        <InfoCell label="Payment" value={booking.paymentStatus || "UNPAID"} valueClassName={booking.isPaid ? "text-green-700" : "text-yellow-700"} />
       </div>
 
       <div className="flex gap-2 justify-end">
@@ -235,11 +235,11 @@ function formatBookingTime(time) {
   date.setHours(Number(hours), Number(minutes), 0, 0)
   return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
 }
-function InfoCell({ label, value }) {
+function InfoCell({ label, value, valueClassName = "text-gray-900" }) {
   return (
     <div>
       <p className="text-xs font-medium text-gray-600">{label}</p>
-      <p className="text-sm font-semibold text-gray-900 mt-1">{value}</p>
+      <p className={`text-sm font-semibold mt-1 ${valueClassName}`}>{value}</p>
     </div>
   )
 }

@@ -116,6 +116,25 @@ export const useProviderBookingsPresenter = () => {
       return { success: false, error: "Failed to complete booking" }
     }
   }
+  /**
+   * Mark a booking as paid, usually after receiving cash
+   */
+  const markBookingPaid = async (bookingId) => {
+    try {
+      const result = await ProviderBookingsModel.markBookingPaid(bookingId)
+      if (result.success) {
+        setBookings((prev) =>
+          prev.map((b) =>
+            b.id === bookingId ? { ...b, paymentStatus: "PAID", isPaid: true } : b
+          )
+        )
+        return { success: true }
+      }
+      return { success: false, error: result.error }
+    } catch {
+      return { success: false, error: "Failed to mark booking as paid" }
+    }
+  }
 
   /**
    * Get bookings by status
@@ -206,6 +225,7 @@ export const useProviderBookingsPresenter = () => {
     acceptBooking,
     rejectBooking,
     completeBooking,
+    markBookingPaid,
     getBookingsByStatus,
 
     // Helpers

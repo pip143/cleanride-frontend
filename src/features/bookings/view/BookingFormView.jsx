@@ -30,6 +30,8 @@ export default function BookingFormView() {
     bookingDate: editingBooking?.bookingDate || editingBooking?.scheduledDate || "",
     timeSlot: editingBooking?.bookingTime || editingBooking?.scheduledTime || editingBooking?.timeSlot || "",
     notes: editingBooking?.notes || "",
+    paymentStatus: editingBooking?.paymentStatus || "UNPAID",
+    paymentMethod: editingBooking?.paymentStatus === "PAID" ? "CASH" : "PAY_LATER",
   })
 
   useEffect(() => {
@@ -84,12 +86,14 @@ export default function BookingFormView() {
 
     setSaving(true)
     try {
+      const paymentStatus = formData.paymentMethod === "CASH" ? "PAID" : "UNPAID"
       const payload = {
         ...formData,
         userId,
         vehicleId: Number(formData.vehicleId),
         serviceId: Number(formData.serviceId),
         bookingTime: formData.timeSlot,
+        paymentStatus,
       }
 
       const result = isEditing
@@ -187,6 +191,16 @@ export default function BookingFormView() {
           <div>
             <label className="block text-sm font-semibold text-blue-950 mb-2">Notes</label>
             <textarea name="notes" value={formData.notes} onChange={handleChange} className="w-full min-h-28 rounded-lg border-2 border-blue-100 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Any special requests..." />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-blue-950 mb-2">Payment</label>
+            <select name="paymentMethod" value={formData.paymentMethod} onChange={handleChange} className="w-full rounded-lg border-2 border-blue-100 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <option value="PAY_LATER">Pay later / unpaid</option>
+              <option value="CASH">Cash paid</option>
+            </select>
+            <p className="text-sm text-blue-700 mt-2">
+              Choose Cash paid when the customer already paid in cash. This will mark the booking as PAID for both customer and provider.
+            </p>
           </div>
 
           <div className="flex gap-3 pt-2">

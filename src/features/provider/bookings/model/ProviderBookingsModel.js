@@ -104,6 +104,23 @@ export const ProviderBookingsModel = {
       }
     }
   },
+  /**
+   * Mark booking as paid, usually after receiving cash
+   */
+  markBookingPaid: async (bookingId) => {
+    try {
+      const response = await api.patch(`/api/bookings/${bookingId}/pay`)
+      return {
+        success: true,
+        data: response.data,
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.error || error.response?.data?.message || "Failed to mark booking as paid",
+      }
+    }
+  },
 
   /**
    * Get booking statistics for provider
