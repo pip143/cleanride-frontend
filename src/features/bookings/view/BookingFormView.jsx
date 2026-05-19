@@ -157,7 +157,7 @@ export default function BookingFormView() {
                   <p className="text-blue-700 mt-1">{selectedServiceData.description}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-blue-700">${Number(selectedServiceData.price || 0).toFixed(2)}</p>
+                  <p className="text-xl font-bold text-blue-700">PHP {Number(selectedServiceData.price || 0).toFixed(2)}</p>
                   <button type="button" onClick={() => setFormData((prev) => ({ ...prev, serviceId: "" }))} className="text-sm text-blue-700 underline mt-2">Change</button>
                 </div>
               </div>
@@ -168,7 +168,7 @@ export default function BookingFormView() {
               <select name="serviceId" value={formData.serviceId} onChange={handleChange} className="w-full rounded-lg border-2 border-blue-100 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Select a service</option>
                 {services.map((service) => (
-                  <option key={service.id} value={service.id}>{service.name} - ${Number(service.price || 0).toFixed(2)}</option>
+                  <option key={service.id} value={service.id}>{service.name} - PHP {Number(service.price || 0).toFixed(2)}</option>
                 ))}
               </select>
               {errors.serviceId && <p className="text-sm text-red-600 mt-1">{errors.serviceId}</p>}

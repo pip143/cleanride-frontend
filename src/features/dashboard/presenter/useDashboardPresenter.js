@@ -43,7 +43,7 @@ class DashboardPresenter {
   transformServices(services) {
     return services.map((service) => ({
       ...service,
-      displayPrice: `$${service.price?.toFixed(2)}`,
+      displayPrice: `PHP ${service.price?.toFixed(2)}`,
       displayDuration: `${service.duration || 30} min`
     }))
   }

@@ -48,9 +48,9 @@ export function useProviderDashboardPresenter() {
     totalEarnings: earningsData?.totalEarnings || 0,
     thisMonthEarnings: earningsData?.thisMonthEarnings || 0,
     pendingEarnings: earningsData?.pendingEarnings || 0,
-    displayTotal: `$${Number(earningsData?.totalEarnings || 0).toFixed(2)}`,
-    displayMonth: `$${Number(earningsData?.thisMonthEarnings || 0).toFixed(2)}`,
-    displayPending: `$${Number(earningsData?.pendingEarnings || 0).toFixed(2)}`,
+    displayTotal: `PHP ${Number(earningsData?.totalEarnings || 0).toFixed(2)}`,
+    displayMonth: `PHP ${Number(earningsData?.thisMonthEarnings || 0).toFixed(2)}`,
+    displayPending: `PHP ${Number(earningsData?.pendingEarnings || 0).toFixed(2)}`,
   })
 
   const transformBookings = (bookingsData) => {
@@ -71,7 +71,7 @@ export function useProviderDashboardPresenter() {
           vehicle.licensePlate ||
           vehicle.plateNumber ||
           "Vehicle",
-        displayPrice: `$${Number(service.price || booking.price || 0).toFixed(2)}`,
+        displayPrice: `PHP ${Number(service.price || booking.price || 0).toFixed(2)}`,
         displayDate: bookingDateTime ? bookingDateTime.toLocaleDateString() : "No date",
         displayTime: bookingDateTime
           ? bookingDateTime.toLocaleTimeString([], {

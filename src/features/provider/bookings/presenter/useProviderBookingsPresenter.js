@@ -165,7 +165,7 @@ export const useProviderBookingsPresenter = () => {
         duration: service.duration ? `${service.duration} min` : "N/A",
         paymentStatus: booking.paymentStatus || "UNPAID",
         isPaid: (booking.paymentStatus || "UNPAID") === "PAID",
-        displayPrice: `$${Number(service.price || booking.price || 0).toFixed(2)}`,
+        displayPrice: `PHP ${Number(service.price || booking.price || 0).toFixed(2)}`,
         displayDate: bookingDateTime ? bookingDateTime.toLocaleDateString() : "No date",
         displayTime: bookingDateTime
           ? bookingDateTime.toLocaleTimeString([], {

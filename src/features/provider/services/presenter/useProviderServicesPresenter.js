@@ -91,7 +91,7 @@ class ProviderServicesPresenter {
   transformServices(services) {
     return services.map((service) => ({
       ...service,
-      displayPrice: `$${service.price?.toFixed(2) || "0.00"}`,
+      displayPrice: `PHP ${service.price?.toFixed(2) || "0.00"}`,
       displayDuration: `${service.duration || 30} min`,
     }))
   }

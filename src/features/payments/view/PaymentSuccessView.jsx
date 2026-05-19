@@ -32,7 +32,7 @@ export const PaymentSuccessView = () => {
           <div className="space-y-4 mb-6">
             <Detail label="Payment Method" value={paymentData.method || "N/A"} />
             <Detail label="Service" value={paymentData.serviceName || "Service"} />
-            <Detail label="Amount Paid" value={`$${Number(paymentData.amount || 0).toFixed(2)}`} strong />
+            <Detail label="Amount Paid" value={`PHP ${Number(paymentData.amount || 0).toFixed(2)}`} strong />
             <Detail label="Booking ID" value={paymentData.bookingId || "N/A"} />
             <div className="flex justify-between items-center">
               <span className="text-gray-600">Payment Status</span>

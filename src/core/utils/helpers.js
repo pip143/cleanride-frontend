@@ -37,11 +37,11 @@ export function formatDateTime(date) {
 /**
  * Formats currency
  * @param {number} value - Amount to format
- * @param {string} currency - Currency code (default: USD)
+ * @param {string} currency - Currency code (default: PHP)
  * @returns {string} - Formatted currency
  */
-export function formatCurrency(value, currency = "USD") {
-  return new Intl.NumberFormat("en-US", {
+export function formatCurrency(value, currency = "PHP") {
+  return new Intl.NumberFormat("en-PH", {
     style: "currency",
     currency: currency
   }).format(value)

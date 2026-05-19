@@ -121,10 +121,10 @@ export const useProviderPaymentsPresenter = () => {
     thisMonthEarnings: rawEarnings.thisMonthEarnings || 0,
     pendingEarnings: rawEarnings.pendingEarnings || 0,
     withdrawnEarnings: rawEarnings.withdrawnEarnings || 0,
-    displayTotal: `$${Number(rawEarnings.totalEarnings || 0).toFixed(2)}`,
-    displayMonth: `$${Number(rawEarnings.thisMonthEarnings || 0).toFixed(2)}`,
-    displayPending: `$${Number(rawEarnings.pendingEarnings || 0).toFixed(2)}`,
-    displayWithdrawn: `$${Number(
+    displayTotal: `PHP ${Number(rawEarnings.totalEarnings || 0).toFixed(2)}`,
+    displayMonth: `PHP ${Number(rawEarnings.thisMonthEarnings || 0).toFixed(2)}`,
+    displayPending: `PHP ${Number(rawEarnings.pendingEarnings || 0).toFixed(2)}`,
+    displayWithdrawn: `PHP ${Number(
       rawEarnings.withdrawnEarnings || 0
     ).toFixed(2)}`,
   })
@@ -150,7 +150,7 @@ export const useProviderPaymentsPresenter = () => {
           : payment.description || "Service Payment",
         amount,
         status,
-        displayAmount: `$${Number(amount).toFixed(2)}`,
+        displayAmount: `PHP ${Number(amount).toFixed(2)}`,
         displayDate,
         statusColor: getPaymentStatusColor(status),
       }
@@ -163,7 +163,7 @@ export const useProviderPaymentsPresenter = () => {
   const transformPayouts = (rawPayouts) => {
     return (rawPayouts || []).map((payout) => ({
       ...payout,
-      displayAmount: `$${Number(payout.amount || 0).toFixed(2)}`,
+      displayAmount: `PHP ${Number(payout.amount || 0).toFixed(2)}`,
       displayDate: new Date(payout.requestDate).toLocaleDateString(),
       statusColor: getPayoutStatusColor(payout.status),
     }))

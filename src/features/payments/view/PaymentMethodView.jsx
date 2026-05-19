@@ -105,7 +105,7 @@ export const PaymentMethodView = () => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-gray-600 text-sm mb-2">Total Amount</p>
-              <p className="text-4xl font-bold text-blue-600">${amount.toFixed(2)}</p>
+              <p className="text-4xl font-bold text-blue-600">PHP {amount.toFixed(2)}</p>
             </div>
             <div className="text-right">
               <p className="text-gray-600 text-sm mb-2">Service</p>

@@ -137,7 +137,7 @@ export function ProviderServiceFormView() {
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-semibold text-purple-900 mb-2">
-                  Price ($) *
+                  Price (PHP) *
                 </label>
                 <input
                   type="number"

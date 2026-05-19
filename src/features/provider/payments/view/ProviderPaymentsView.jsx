@@ -111,7 +111,7 @@ export const ProviderPaymentsView = () => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-purple-200 mb-2">Available Balance</p>
-              <p className="text-4xl font-bold">${presenter.availableBalance.toFixed(2)}</p>
+              <p className="text-4xl font-bold">PHP {presenter.availableBalance.toFixed(2)}</p>
             </div>
             {presenter.availableBalance > 0 && (
               <button
@@ -269,7 +269,7 @@ export const ProviderPaymentsView = () => {
             <div className="mb-6">
               <p className="text-gray-600 text-sm mb-2">Available Balance</p>
               <p className="text-3xl font-bold text-purple-600">
-                ${presenter.availableBalance.toFixed(2)}
+                PHP {presenter.availableBalance.toFixed(2)}
               </p>
             </div>
 

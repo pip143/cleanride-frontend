@@ -120,7 +120,7 @@ class BookingsPresenter {
         vehicleName: vehicleName || vehicle.licensePlate || vehicle.plateNumber || "Vehicle",
         scheduledDate: booking.bookingDate || booking.scheduledDate || "",
         scheduledTime: booking.bookingTime || booking.timeSlot || booking.scheduledTime || "",
-        displayPrice: `$${Number(service.price || booking.totalPrice || 0).toFixed(2)}`,
+        displayPrice: `PHP ${Number(service.price || booking.totalPrice || 0).toFixed(2)}`,
         displayDuration: service.duration ? `${service.duration} min` : "N/A",
         paymentStatus,
         isPaid: paymentStatus === "PAID",

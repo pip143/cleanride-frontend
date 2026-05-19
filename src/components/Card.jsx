@@ -21,7 +21,7 @@ export function ServiceCard({ service, onBook }) {
       <h3>{service.name}</h3>
       <p className="service-description">{service.description}</p>
       <div className="service-meta">
-        <span className="service-price">${service.price}</span>
+        <span className="service-price">PHP {Number(service.price || 0).toFixed(2)}</span>
         <span className="service-duration">{service.duration} min</span>
       </div>
       <button className="service-book-btn" onClick={() => onBook(service)}>
